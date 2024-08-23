@@ -1,6 +1,6 @@
 # :pencil: Chatty
 
-A simple IRC written in Java 17 using Sockets.
+A simple IRC written in Java 21 using Sockets.
 
 > [!IMPORTANT]
 > This library is an on-going experimental work-in-progress I sometimes work on.  
@@ -24,7 +24,7 @@ Further information may or may not be updated soon.
 ## 2. Dependencies
 
 None yet, prolly never.  
-Well not directly, you need Java 17⬆️ ofc.
+Well not directly, you need Java 21⬆️ ofc.
 
 ## 3. LICENSE AND LAW
 

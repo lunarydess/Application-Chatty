@@ -1,4 +1,4 @@
-rootProject.name = "Application-Chatty"
+rootProject.name = "server"
 
 pluginManagement {
     repositories {
@@ -6,9 +6,3 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
-
-include(
-    ":api",
-    ":client",
-    ":server"
-)
