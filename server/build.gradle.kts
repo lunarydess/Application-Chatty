@@ -15,6 +15,7 @@ version = "0.0.0-develop"
 
 repositories {
     mavenCentral()
+    maven(url = "https://oss.sonatype.org/content/groups/public/")
 }
 
 dependencies {
@@ -126,7 +127,6 @@ dependencies {
         version = properties["dep-conf_jackson"].toString()
     )
 
-
     implementation(
         group = "org.jline",
         name = "jline-native",
@@ -169,6 +169,203 @@ dependencies {
         group = "org.jline",
         name = "jline-terminal-jni",
         version = properties["dep-term_jline"].toString()
+    )
+
+    implementation(
+        group = "io.netty",
+        name = "netty-common",
+        version = properties["dep_net-netty"].toString()
+    )
+    shadow(
+        group = "io.netty",
+        name = "netty-common",
+        version = properties["dep_net-netty"].toString()
+    )
+
+    implementation(
+        group = "io.netty",
+        name = "netty-buffer",
+        version = properties["dep_net-netty"].toString()
+    )
+    shadow(
+        group = "io.netty",
+        name = "netty-buffer",
+        version = properties["dep_net-netty"].toString()
+    )
+
+    implementation(
+        group = "io.netty",
+        name = "netty-codec",
+        version = properties["dep_net-netty"].toString()
+    )
+    shadow(
+        group = "io.netty",
+        name = "netty-codec",
+        version = properties["dep_net-netty"].toString()
+    )
+
+    implementation(
+        group = "io.netty",
+        name = "netty-codec-compression",
+        version = properties["dep_net-netty"].toString()
+    )
+    shadow(
+        group = "io.netty",
+        name = "netty-codec-compression",
+        version = properties["dep_net-netty"].toString()
+    )
+
+    implementation(
+        group = "io.netty",
+        name = "netty-resolver",
+        version = properties["dep_net-netty"].toString()
+    )
+    shadow(
+        group = "io.netty",
+        name = "netty-resolver",
+        version = properties["dep_net-netty"].toString()
+    )
+
+    implementation(
+        group = "io.netty",
+        name = "netty-codec",
+        version = properties["dep_net-netty"].toString()
+    )
+    shadow(
+        group = "io.netty",
+        name = "netty-codec",
+        version = properties["dep_net-netty"].toString()
+    )
+
+    implementation(
+        group = "io.netty",
+        name = "netty-transport",
+        version = properties["dep_net-netty"].toString()
+    )
+    shadow(
+        group = "io.netty",
+        name = "netty-transport",
+        version = properties["dep_net-netty"].toString()
+    )
+
+    implementation(
+        group = "io.netty",
+        name = "netty-transport-classes-epoll",
+        version = properties["dep_net-netty"].toString()
+    )
+    shadow(
+        group = "io.netty",
+        name = "netty-transport-classes-epoll",
+        version = properties["dep_net-netty"].toString()
+    )
+
+    implementation(
+        group = "io.netty",
+        name = "netty-transport-classes-kqueue",
+        version = properties["dep_net-netty"].toString()
+    )
+    shadow(
+        group = "io.netty",
+        name = "netty-transport-classes-kqueue",
+        version = properties["dep_net-netty"].toString()
+    )
+
+    implementation(
+        group = "io.netty",
+        name = "netty-transport-native-epoll",
+        version = properties["dep_net-netty"].toString(),
+        classifier = "linux-aarch_64"
+    )
+    shadow(
+        group = "io.netty",
+        name = "netty-transport-native-epoll",
+        version = properties["dep_net-netty"].toString(),
+        classifier = "linux-aarch_64"
+    )
+
+    /*implementation(
+        group = "io.netty",
+        name = "netty-transport-native-epoll",
+        version = properties["dep_net-netty"].toString(),
+        classifier = "linux-riscv64"
+    )
+    shadow(
+        group = "io.netty",
+        name = "netty-transport-native-epoll",
+        version = properties["dep_net-netty"].toString(),
+        classifier = "linux-riscv64"
+    )*/
+
+    implementation(
+        group = "io.netty",
+        name = "netty-transport-native-epoll",
+        version = properties["dep_net-netty"].toString(),
+        classifier = "linux-x86_64"
+    )
+    shadow(
+        group = "io.netty",
+        name = "netty-transport-native-epoll",
+        version = properties["dep_net-netty"].toString(),
+        classifier = "linux-x86_64"
+    )
+
+    implementation(
+        group = "io.netty",
+        name = "netty-transport-native-kqueue",
+        version = properties["dep_net-netty"].toString(),
+        classifier = "osx-aarch_64"
+    )
+    shadow(
+        group = "io.netty",
+        name = "netty-transport-native-kqueue",
+        version = properties["dep_net-netty"].toString(),
+        classifier = "osx-aarch_64"
+    )
+
+    implementation(
+        group = "io.netty",
+        name = "netty-transport-native-kqueue",
+        version = properties["dep_net-netty"].toString(),
+        classifier = "osx-x86_64"
+    )
+    shadow(
+        group = "io.netty",
+        name = "netty-transport-native-kqueue",
+        version = properties["dep_net-netty"].toString(),
+        classifier = "osx-x86_64"
+    )
+
+    implementation(
+        group = "io.netty",
+        name = "netty-handler",
+        version = properties["dep_net-netty"].toString()
+    )
+    shadow(
+        group = "io.netty",
+        name = "netty-handler",
+        version = properties["dep_net-netty"].toString()
+    )
+
+    implementation(
+        group = "com.jcraft",
+        name = "jzlib",
+        version = properties["dep_net-jzlib"].toString()
+    )
+    shadow(
+        group = "com.jcraft",
+        name = "jzlib",
+        version = properties["dep_net-jzlib"].toString()
+    )
+
+    implementation(
+        group = "org.bouncycastle",
+        name = "bcprov-jdk18on",
+        version = properties["dep_net-bcprov"].toString()
+    )
+    shadow(
+        group = "org.bouncycastle",
+        name = "bcprov-jdk18on",
+        version = properties["dep_net-bcprov"].toString()
     )
 
     val libs = fileTree(
@@ -182,9 +379,12 @@ dependencies {
     shadow(dependencyNotation = libs)
 }
 
+tasks {
+}
+
 tasks.withType<JavaCompile> {
-    sourceCompatibility = JavaVersion.VERSION_17.toString()
-    targetCompatibility = JavaVersion.VERSION_17.toString()
+    sourceCompatibility = JavaVersion.VERSION_21.toString()
+    targetCompatibility = JavaVersion.VERSION_21.toString()
     options.encoding = StandardCharsets.UTF_8.toString()
 }
 

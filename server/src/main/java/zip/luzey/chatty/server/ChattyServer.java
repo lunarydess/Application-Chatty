@@ -1,110 +1,140 @@
 package zip.luzey.chatty.server;
 
-import org.jline.reader.LineReader;
-import org.jline.reader.LineReaderBuilder;
-import org.jline.terminal.Terminal;
-import org.jline.terminal.TerminalBuilder;
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.buffer.PooledByteBufAllocator;
+import io.netty.channel.*;
+import io.netty.channel.epoll.Epoll;
+import io.netty.channel.epoll.EpollIoHandler;
+import io.netty.channel.epoll.EpollServerSocketChannel;
+import io.netty.channel.kqueue.KQueue;
+import io.netty.channel.kqueue.KQueueIoHandler;
+import io.netty.channel.kqueue.KQueueServerSocketChannel;
+import io.netty.channel.nio.NioIoHandler;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import zip.luzey.chatty.server.command.CommandRegistry;
+import zip.luzey.chatty.api.ChannelHandler;
+import zip.luzey.chatty.api.ChattyInitializer;
+import zip.luzey.tinyevents.TinyEvents;
 
-import java.io.IOException;
-import java.net.ServerSocket;
-import java.nio.charset.StandardCharsets;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.IdentityHashMap;
 
-public final class ChattyServer {
-	private static ChattyServer server;
+public class ChattyServer {
+	public static boolean
+		 EPOLL = Epoll.isAvailable(),
+		 KQUEUE = KQueue.isAvailable();
 
-	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	private final Logger logger = LoggerFactory.getLogger(ChattyServer.class);
+	private final TinyEvents events = new TinyEvents(
+		 IdentityHashMap::new,
+		 throwable -> this.logger.error("event error", throwable)
+	);
 
-	private final Terminal terminal = TerminalBuilder.builder()
-	                                                 .system(true)
-	                                                 .color(true)
-	                                                 .encoding(StandardCharsets.UTF_8)
-	                                                 .nativeSignals(true)
-	                                                 .jna(true)
-	                                                 .jni(true)
-	                                                 .build();
-	private final LineReader reader = LineReaderBuilder.builder()
-	                                                   .terminal(terminal)
-	                                                   .build();
+	private final String host;
+	private final int port;
 
-	private final CommandRegistry commandRegistry = new CommandRegistry();
-	private final Configurations configurations = new Configurations(throwable -> this.getLogger().error(throwable.getMessage(), throwable));
-	private final CopyOnWriteArrayList<User> users = new CopyOnWriteArrayList<>();
+	private final EventLoopGroup bossGroup;
+	private final EventLoopGroup workerGroup;
+	private final Class<? extends ServerChannel> channel;
+	private final ChattyInitializer networkInitializer;
 
-	ChattyServer() throws IOException {}
+	private ServerBootstrap serverBootstrap;
+	private ChannelFuture channelFuture;
 
-	public static void main(final String... args) throws RuntimeException {
-		try {
-			server = new ChattyServer();
-			if (!server.getConfigurations().load()) throw new ExceptionInInitializerError("config file couldn't be load");
-			if (server.getConfigurations().getData() == null) throw new NullPointerException();
-		} catch (IOException | RuntimeException e) {
-			throw new RuntimeException(e);
-		}
-
-		new Thread(() -> {
-			String line = server.getReader().readLine();
-			do {
-				server.getCommandRegistry().execute(line);
-			} while ((line = server.getReader().readLine()) != null);
-		}, "Input-Thread").start();
-
-		try (final ServerSocket socketServer = new ServerSocket(server.getConfigurations().getData().general().port())) {
-			server.getLogger().info(
-				 """
-
-				  ______  __            __    __         \s
-				 |      ||  |--..---.-.|  |_ |  |_ .--.--.
-				 |   ---||     ||  _  ||   _||   _||  |  |
-				 |______||__|__||___._||____||____||___  |
-				                                   |_____|
-
-				  \u25a1 Listening on \u25e6 {}:{}
-				  \u25a1 Made by \u25e6 lunarydess \u2661
-				 \s""",
-				 server.getConfigurations().getData().general().host(),
-				 server.getConfigurations().getData().general().port()
-			);
-			for ( ; ; ) {
-				server.getUsers().add(new User(socketServer.accept()));
-			}
-		} catch (IOException exception) {
-			server.getLogger().error("couldn't accept server socket", exception);
-		}
+	public ChattyServer(TinyEvents eventManager) {
+		this("127.0.0.1", 1337, eventManager);
 	}
 
-	public static ChattyServer get() {
-		return server;
+	public ChattyServer(
+		 int port,
+		 TinyEvents eventManager
+	) {
+		this("127.0.0.1", port, eventManager);
 	}
 
-	public void shutdown() {
-		System.exit(0);
+	public ChattyServer(
+		 String host,
+		 int port,
+		 TinyEvents eventManager
+	) {
+		this.host = host;
+		this.port = port;
+
+		this.networkInitializer = new ChattyInitializer(
+			 (tinyEvents, channel1) -> new ChannelHandler(channel1, tinyEvents),
+			 this.events
+		);
+
+		this.bossGroup =
+			 this.workerGroup =
+				  new MultiThreadIoEventLoopGroup(
+						EPOLL ? (KQUEUE ?
+						         KQueueIoHandler.newFactory() :
+						         EpollIoHandler.newFactory()) :
+						NioIoHandler.newFactory()
+				  );
+
+		this.channel =
+			 EPOLL ? (KQUEUE ?
+			          KQueueServerSocketChannel.class :
+			          EpollServerSocketChannel.class) :
+			 NioServerSocketChannel.class;
+	}
+
+	public void start() {
+		this.channelFuture = (this.serverBootstrap = new ServerBootstrap()
+			 .channel(channel)
+
+			 .childOption(ChannelOption.IP_TOS, 0xA) // AF 11
+			 .childOption(ChannelOption.TCP_NODELAY, true)
+			 .childOption(ChannelOption.TCP_FASTOPEN_CONNECT, false)
+			 .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
+
+			 .option(ChannelOption.SO_REUSEADDR, true)
+
+			 .group(bossGroup, workerGroup)
+			 .childHandler(networkInitializer)
+
+			 .localAddress(host, port)).bind().syncUninterruptibly();
 	}
 
 	public Logger getLogger() {
 		return this.logger;
 	}
 
-	public Terminal getTerminal() {
-		return this.terminal;
+	public TinyEvents getEvents() {
+		return this.events;
 	}
 
-	public LineReader getReader() {
-		return this.reader;
+	public String getHost() {
+		return this.host;
 	}
 
-	public CommandRegistry getCommandRegistry() {
-		return this.commandRegistry;
+	public int getPort() {
+		return this.port;
 	}
 
-	public Configurations getConfigurations() {
-		return this.configurations;
+	public EventLoopGroup getBossGroup() {
+		return this.bossGroup;
 	}
 
-	public CopyOnWriteArrayList<User> getUsers() {
-		return this.users;
+	public EventLoopGroup getWorkerGroup() {
+		return workerGroup;
+	}
+
+	public Class<? extends ServerChannel> getChannel() {
+		return this.channel;
+	}
+
+	public ServerBootstrap getServerBootstrap() {
+		return this.serverBootstrap;
+	}
+
+	public ChannelFuture getFuture() {
+		return this.channelFuture;
+	}
+
+	public ChattyInitializer getNetworkInitializer() {
+		return this.networkInitializer;
 	}
 }

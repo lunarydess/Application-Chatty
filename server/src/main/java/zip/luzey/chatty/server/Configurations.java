@@ -13,6 +13,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.StringJoiner;
 import java.util.function.Consumer;
 
 public final class Configurations {
@@ -22,7 +23,7 @@ public final class Configurations {
 	private static final String DEFAULT_CONFIG =
 		 """
 		  config_version = 1
-		  \s
+
 		  [general]
 		  host = "127.0.0.1"
 		  port = 1337
@@ -61,7 +62,7 @@ public final class Configurations {
 
 	public boolean load() {
 		try {
-			ChattyServer.get().getLogger().debug((this.data = mapper.readValue(CONFIG_PATH.toFile(), ConfigValues.class)).toString());
+			this.data = mapper.readValue(CONFIG_PATH.toFile(), ConfigValues.class);
 			if (this.getData().configVersion() == CONFIG_VERSION) return true;
 			this.onError.accept(new RuntimeException("wrong config version, things might be incorrect or break."));
 		} catch (final Throwable throwable) {
@@ -83,11 +84,11 @@ public final class Configurations {
 			 @JsonProperty("host") @NotNull String host,
 			 @JsonProperty("port") int port
 		) {
-			@Override public String toString() {
-				return "General{" +
-				       "host='" + host + '\'' +
-				       ", port=" + port +
-				       '}';
+			public @Override String toString() {
+				return new StringJoiner(", ", General.class.getSimpleName() + "[", "]")
+					 .add("host='" + host + "'")
+					 .add("port=" + port)
+					 .toString();
 			}
 		}
 	}

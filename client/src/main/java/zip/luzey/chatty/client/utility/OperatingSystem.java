@@ -73,11 +73,11 @@ public enum OperatingSystem {
 		 */
 		public static boolean is64Bit() {
 			return isArm64 () ||
-			       isAmd64 () ||
-			       isMips64() ||
-			       isPpc64 () ||
-			       isSparc () ||
-			       isIa64  ();
+					 isAmd64 () ||
+					 isMips64() ||
+					 isPpc64 () ||
+					 isSparc () ||
+					 isIa64  ();
 		}
 
 		public static @NotNull String getArchString() { return PROP_ARCH; }
