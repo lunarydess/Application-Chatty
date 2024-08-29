@@ -1,6 +1,6 @@
 # :pencil: Chatty
 
-A simple IRC written in Java 21 using Sockets.
+A simple IRC written in Java 21 using Netty 4.
 
 > [!IMPORTANT]
 > This IRC is not in a working state.
