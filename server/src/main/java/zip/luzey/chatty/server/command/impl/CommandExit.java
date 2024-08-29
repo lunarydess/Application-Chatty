@@ -19,7 +19,6 @@ public final class CommandExit extends AbstractCommand {
 
 	@Override
 	public boolean run(final String... args) {
-		ChattyServer.get().shutdown();
 		return true;
 	}
 

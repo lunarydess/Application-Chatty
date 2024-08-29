@@ -81,6 +81,10 @@ public class ChattyServer {
 			 NioServerSocketChannel.class;
 	}
 
+	public static void main(String[] args) {
+		new ChattyServer(1337, new TinyEvents(IdentityHashMap::new)).start();
+	}
+
 	public void start() {
 		this.channelFuture = (this.serverBootstrap = new ServerBootstrap()
 			 .channel(channel)

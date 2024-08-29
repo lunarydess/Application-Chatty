@@ -81,34 +81,34 @@ dependencies {
     implementation(
         group = "com.miglayout",
         name = "miglayout-swing",
-        version = properties["dep-ui_miglayout"].toString()
+        version = properties["dep_ui-miglayout"].toString()
     )
     shadow(
         group = "com.miglayout",
         name = "miglayout-swing",
-        version = properties["dep-ui_miglayout"].toString()
+        version = properties["dep_ui-miglayout"].toString()
     )
 
     implementation(
         group = "com.formdev",
         name = "flatlaf",
-        version = properties["dep-ui_flatlaf"].toString()
+        version = properties["dep_ui-flatlaf"].toString()
     )
     shadow(
         group = "com.formdev",
         name = "flatlaf",
-        version = properties["dep-ui_flatlaf"].toString()
+        version = properties["dep_ui-flatlaf"].toString()
     )
 
     implementation(
         group = "com.formdev",
         name = "flatlaf-intellij-themes",
-        version = properties["dep-ui_flatlaf"].toString()
+        version = properties["dep_ui-flatlaf"].toString()
     )
     shadow(
         group = "com.formdev",
         name = "flatlaf-intellij-themes",
-        version = properties["dep-ui_flatlaf"].toString()
+        version = properties["dep_ui-flatlaf"].toString()
     )
 
     implementation(
