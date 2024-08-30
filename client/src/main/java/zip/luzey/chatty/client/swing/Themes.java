@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.function.Predicate;
 
 public enum Themes {
 	// @formatter:off
@@ -132,10 +132,14 @@ public enum Themes {
 		 final @NotNull String name,
 		 final boolean ignoreCase
 	) {
-		return Arrays.stream(values())
-		             .filter(ignoreCase ? t -> t.friendlyName.equalsIgnoreCase(name) : t -> t.friendlyName.equals(name))
-		             .findFirst()
-		             .orElse(null);
+		Predicate<Themes> predicate = ignoreCase ?
+		                              t -> t.friendlyName.equalsIgnoreCase(name) :
+		                              t -> t.friendlyName.equals(name);
+		for (Themes theme : values()) {
+			if (!predicate.test(theme)) continue;
+			return theme;
+		}
+		return null;
 	}
 
 	public static Themes getGlobalTheme() {

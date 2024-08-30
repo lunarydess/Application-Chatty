@@ -7,7 +7,7 @@ plugins {
     id("java")
     id("java-library")
 
-    id("com.gradleup.shadow") version "8.3.0"
+    alias(libs.plugins.shadow)
 }
 
 group = "zip.luzey.chatty"
@@ -24,6 +24,42 @@ dependencies {
 
     implementation(libs.bundles.network.all)
     shadow(libs.bundles.network.all)
+
+    var idx = 0;
+
+    val classifiersLinux = arrayOf(
+        "linux-aarch_64",
+        "linux-riscv64",
+        "linux-x86_64",
+    )
+    val nettyNativesLinux = arrayOf(
+        libs.netty.transport.native.epoll.linux.aarch.get64().get(),
+        libs.netty.transport.native.epoll.linux.riscv64.get(),
+        libs.netty.transport.native.epoll.linux.x86.get64().get()
+    )
+    nettyNativesLinux.forEach {
+        it.artifacts.add(it.artifact { classifier = classifiersLinux[idx] })
+        idx++
+        implementation(it)
+        shadow(it)
+    }
+
+    idx = 0;
+
+    val classifiersMac = arrayOf(
+        "osx-aarch_64",
+        "osx-x86_64",
+    )
+    val nettyNativesMac = arrayOf(
+        libs.netty.transport.native.kqueue.osx.aarch.get64().get(),
+        libs.netty.transport.native.kqueue.osx.x86.get64().get()
+    )
+    nettyNativesMac.forEach {
+        it.artifacts.add(it.artifact { classifier = classifiersMac[idx] })
+        idx++
+        implementation(it)
+        shadow(it)
+    }
 
     val libs = fileTree(
         mapOf(

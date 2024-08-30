@@ -1,4 +1,4 @@
-package zip.luzey.chatty.client.utility;
+package zip.luzey.chatty.api.util;
 
 
 import org.jetbrains.annotations.NotNull;
@@ -55,18 +55,41 @@ public enum OperatingSystem {
 			 PPC_64  = PROP_ARCH.contains("ppc64"  ),
 			 SPARC   = PROP_ARCH.contains("sparcv9");
 
+		public static boolean isAmd64() {
+			return AMD_64;
+		}
 
+		public static boolean isArm64() {
+			return ARM_64;
+		}
 
-		/** @return if it's amd64 */ public static boolean isAmd64 () { return AMD_64; }
-		/** @return if it's arm64 */ public static boolean isArm64 () { return ARM_64; }
-		/** @return if it's arm   */ public static boolean isArm   () { return ARM  ; }
-		/** @return if it's x86   */ public static boolean isX86   () { return X_86  ; }
+		public static boolean isArm() {
+			return ARM  ;
+		}
 
-		/** @return if it's ia64   */ public static boolean isIa64   () { return IA_64  ; }
-		/** @return if it's mips64 */ public static boolean isMips64 () { return MIPS_64; }
-		/** @return if it's mips   */ public static boolean isMips   () { return MIPS  ; }
-		/** @return if it's ppc64  */ public static boolean isPpc64  () { return PPC_64 ; }
-		/** @return if it's sparc  */ public static boolean isSparc  () { return SPARC ; }
+		public static boolean isX86() {
+			return X_86  ;
+		}
+
+		public static boolean isIa64() {
+			return IA_64  ;
+		}
+
+		public static boolean isMips64() {
+			return MIPS_64;
+		}
+
+		public static boolean isMips() {
+			return MIPS  ;
+		}
+
+		public static boolean isPpc64() {
+			return PPC_64 ;
+		}
+
+		public static boolean isSparc() {
+			return SPARC ;
+		}
 
 		/**
 		 * @return if it's 64-bit
@@ -80,6 +103,6 @@ public enum OperatingSystem {
 					 isIa64  ();
 		}
 
-		public static @NotNull String getArchString() { return PROP_ARCH; }
+		public static @NotNull String getArch() { return PROP_ARCH; }
 	} // @formatter:on
 }

@@ -1,12 +1,14 @@
 package zip.luzey.chatty.client.swing;
 
 import org.jetbrains.annotations.NotNull;
-import zip.luzey.chatty.client.utility.OperatingSystem;
+import zip.luzey.chatty.api.util.OperatingSystem;
 
 import javax.swing.*;
 
 public final class SwingBuilder {
-	static {
+	private FrameInstance[] instances = new FrameInstance[0];
+
+	public static void init() {
 		switch (OperatingSystem.get()) {
 			case LINUX -> {
 				JFrame.setDefaultLookAndFeelDecorated(true);
@@ -20,8 +22,6 @@ public final class SwingBuilder {
 			}
 		}
 	}
-
-	private FrameInstance[] instances = new FrameInstance[0];
 
 	public void build() {
 		for (FrameInstance instance : instances)
